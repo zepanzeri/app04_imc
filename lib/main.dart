@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,6 +30,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  var txtWeight = TextEditingController();
+  var txtHeight = TextEditingController();
+  // chave que identifica unicamente o formulario
+  var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,24 +45,34 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                formKey.currentState.reset();
+                txtWeight.text = "";
+                txtHeight.text = "";
+                FocusScope.of(context).unfocus();
+              });
+            },
           ),
         ],
       ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
         padding: EdgeInsets.all(40),
-        child: Column(
-          children: [
-            Icon(
-              Icons.people,
-              size: 120,
-              color: Theme.of(context).primaryColor,
-            ),
-            textField('Peso', null),
-            textField('Altura', null),
-            button('Calcular'),
-          ],
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Icon(
+                Icons.people,
+                size: 120,
+                color: Theme.of(context).primaryColor,
+              ),
+              textField('Peso', null),
+              textField('Altura', null),
+              button('Calcular'),
+            ],
+          ),
         ),
       ),
     );
@@ -82,6 +97,16 @@ class _MainScreenState extends State<MainScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
+        //
+        //Validar entrada de dados
+        //
+        validator: (value) {
+          if (double.tryParse(value) == null) {
+            return 'Entre com uma valor numerico';
+          } else {
+            return null;
+          }
+        },
       ),
     );
   }
@@ -102,8 +127,41 @@ class _MainScreenState extends State<MainScreen> {
             fontSize: 18,
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          if (formKey.currentState.validate()) {
+            //o metodo setState é utilizado todas as vezes que é necessário alterar o estado do app
+            setState(() {
+              double weight = double.parse(txtWeight.text);
+              double height = double.parse(txtHeight.text);
+              double imc = weight / pow(height, 2);
+              dialogBox('IMC = ${imc.toStringAsFixed(2)}');
+            });
+          }
+        },
       ),
+    );
+  }
+
+  //
+  //Caixa de dialogo
+  //
+  dialogBox(msg) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Resultado'),
+          content: Text(msg),
+          actions: [
+            TextButton(
+              child: Text('Fechar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
     );
   }
 }
