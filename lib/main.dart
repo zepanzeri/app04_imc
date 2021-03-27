@@ -68,8 +68,8 @@ class _MainScreenState extends State<MainScreen> {
                 size: 120,
                 color: Theme.of(context).primaryColor,
               ),
-              textField('Peso', null),
-              textField('Altura', null),
+              textField('Peso', txtWeight),
+              textField('Altura', txtHeight),
               button('Calcular'),
             ],
           ),
@@ -86,7 +86,6 @@ class _MainScreenState extends State<MainScreen> {
       padding: EdgeInsets.symmetric(vertical: 6),
       child: TextFormField(
         controller: variable,
-        //
         style: TextStyle(fontSize: 24),
         decoration: InputDecoration(
           labelText: label,
